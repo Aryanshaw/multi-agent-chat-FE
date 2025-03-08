@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef , useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useWebSocket } from '../../utils/socketContext';
 import './Home.css';
 
@@ -9,18 +9,6 @@ interface Message {
   id?: string;
   agentType?: string;
   status?: 'thinking' | 'completed' | 'error';
-}
-
-interface AgentActivity {
-  agentType: string;
-  status: 'thinking' | 'completed' | 'error';
-  content: string;
-  responseId?: string; // To link responses to agents
-  steps?: {
-    status: 'thinking' | 'completed' | 'error';
-    agent_type: string;
-    content: string;
-  }[]
 }
 
 const Home = () => {
@@ -53,8 +41,6 @@ const Home = () => {
     const handleMessage = (event: MessageEvent) => {
         try {
           const data = JSON.parse(event.data);
-          
-          console.log(data, "data");
           
           // Handle agent step status updates
           if (data.type === 'agent_step_status') {
@@ -89,7 +75,8 @@ const Home = () => {
                 }
               }
             }
-            
+            console.log(lastAgent, "lastAgent");
+
             // Clean up the response text - remove duplicated content
             const cleanedResponse = cleanResponseText(responseText);
             
@@ -185,11 +172,6 @@ const Home = () => {
     setMessages(prev => [...prev, { sender, text, type, id }]);
   };
 
-  const removeMessage = (id: string | undefined) => {
-    if (id) {
-      setMessages(prev => prev.filter(msg => msg.id !== id));
-    }
-  }
 
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
